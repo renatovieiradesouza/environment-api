@@ -17,5 +17,5 @@ jobs:
   - task: PublishPipelineArtifact@1
     displayName: Store Application Artifact
     inputs:
-      PathtoPublish: $(System.DefaultWorkingDirectory)/artifact
+      targetPath: $(System.DefaultWorkingDirectory)/artifact
       ArtifactName: $(project_name)
