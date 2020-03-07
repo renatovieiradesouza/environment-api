@@ -7,14 +7,14 @@ variables:
 jobs:
 - job: Build
   steps:
-  - script: 
+  - script: |
       pwd && ls -la
       dotnet restore
       dotnet publish -c Release -o $(relative_path_publish)$(netcore_version)
       mkdir artifact
-      cp -r $(project_name)$(relative_path_copy)$(netcore_version) artifact/$(Build.SourceBranchName)
+      cp -r $(project_name)/$(relative_path_copy)$(netcore_version) artifact/$(Build.SourceBranchName)
     displayName: Build Application
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: Store Application Artifact
     inputs:
       path: $(System.DefaultWorkingDirectory)/artifact
