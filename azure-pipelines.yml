@@ -17,5 +17,5 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: Store Application Artifact
     inputs:
-      TargetPath: $(System.DefaultWorkingDirectory)/artifact
-      ArtifactName: $(project_name)
+      path: $(System.DefaultWorkingDirectory)/artifact
+      artifact: $(project_name)
