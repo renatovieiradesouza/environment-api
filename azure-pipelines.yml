@@ -1,0 +1,21 @@
+variables:
+  project_name: 'EnvironmentApi'
+  netcore_version: '2.2'
+  relative_path_publish: 'bin/Release/netcoreapp'
+  relative_path_copy: '/bin/Release/netcoreapp'
+
+jobs:
+- job: Build
+  steps:
+  - script: 
+      pwd && ls -la
+      dotnet restore
+      dotnet publish -c Release -o $(relative_path_publish)$(netcore_version)
+      mkdir artifact
+      cp -r $(project_name)$(relative_path_copy)$(netcore_version) artifact/$(Build.SourceBranchName)
+    displayName: Build Application
+  - task: PublishBuildArtifacts@1
+    displayName: Store Application Artifact
+    inputs:
+      TargetPath: $(System.DefaultWorkingDirectory)/artifact
+      ArtifactName: $(project_name)
