@@ -62,10 +62,9 @@ jobs:
     displayName: Get Test Result
     inputs:
       artifact: UnitTestResults
-  - task: SonarCloudPrepare@1
+  - task: SonarQubePrepare@4
     inputs:
-      SonarCloud: '$(sonarcloud_account)'
-      organization: '$(sonarcloud_organization)'
+      SonarQube: 'testeSonar'
       scannerMode: 'MSBuild'
       projectKey: '$(sonarcloud_project)'
       projectName: '$(project_name)'
@@ -73,8 +72,8 @@ jobs:
   - script: |
       dotnet build
     displayName: Runnig Build For Analysis
-  - task: SonarCloudAnalyze@1
+  - task: SonarQubeAnalyze@4
     displayName: Finish Sonarqube Analysis
-  - task: SonarCloudPublish@1
+  - task: SonarQubePublish@4
     inputs:
       pollingTimeoutSec: '300'
