@@ -5,7 +5,7 @@ variables:
   relative_path_copy: '/bin/Release/netcoreapp'
   sonarcloud_project: 'RenasTI_Environment_API'
   sonarcloud_organization: 'renasti-github'
-  sonarcloud_account: 'SonarCloudRenasTI'
+  sonarcloud_account: 'testeSonar'
 
 jobs:
 - job: Build
