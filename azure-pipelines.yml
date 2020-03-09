@@ -6,6 +6,10 @@ variables:
   sonarcloud_project: 'RenasTI_Environment_API'
   sonarcloud_organization: 'renasti-github'
   sonarcloud_account: 'testeSonar'
+  docker_image_name: 'renasti/environment-api'
+  docker_registry_account: 'DockerRegistryRenasTI'
+
+name: 1.0$(rev:.r)
 
 jobs:
 - job: Build
@@ -55,7 +59,7 @@ jobs:
         testResultsFiles: '$(System.DefaultWorkingDirectory)/$(project_name).Tests/results/result.xunit.xml'
         testRunTitle: 'Collecting Test Results'
 
-- job: QualityAnalysis
+- job: SonarAnalysis
   dependsOn: UnitTests
   steps:
   - task: DownloadPipelineArtifact@2
@@ -77,3 +81,40 @@ jobs:
   - task: SonarQubePublish@4
     inputs:
       pollingTimeoutSec: '300'
+
+- job: PublishDockerImage
+  dependsOn: SonarAnalysis
+  condition:  and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
+  variables:
+    Version: '$(Build.BuildNumber)'
+  steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: Get Application Artifact
+    inputs:
+      artifact: $(project_name)
+  - script: |
+      mkdir -p $(project_name)/bin/Release
+      cp -r $(Pipeline.Workspace)/$(Build.SourceBranchName) $(project_name)/bin/Release/netcoreapp$(netcore_version)
+    displayName: Prepare Files
+  - task: replacetokens@3
+    inputs:
+      targetFiles: 'Dockerfile'
+      encoding: 'auto'
+      writeBOM: true
+      verbosity: 'detailed'
+      actionOnMissing: 'warn'
+      keepToken: true
+      tokenPrefix: '__['
+      tokenSuffix: ']__'
+    displayName: Add Version as Env Var
+  - task: Docker@2
+    displayName: 'Build and Publish Docker Image'
+    inputs:
+      containerRegistry: '$(docker_registry_account)'
+      repository: '$(docker_image_name)'
+      command: 'buildAndPush'
+      Dockerfile: '$(System.DefaultWorkingDirectory)/Dockerfile'
+      buildContext: '$(System.DefaultWorkingDirectory)'
+      tags: |
+        $(Version)
+        latest
