@@ -96,17 +96,6 @@ jobs:
       mkdir -p $(project_name)/bin/Release
       cp -r $(Pipeline.Workspace)/$(Build.SourceBranchName) $(project_name)/bin/Release/netcoreapp$(netcore_version)
     displayName: Prepare Files
-  - task: replacetokens@3
-    inputs:
-      targetFiles: 'Dockerfile'
-      encoding: 'auto'
-      writeBOM: true
-      verbosity: 'detailed'
-      actionOnMissing: 'warn'
-      keepToken: true
-      tokenPrefix: '__['
-      tokenSuffix: ']__'
-    displayName: Add Version as Env Var
   - task: Docker@2
     displayName: 'Build and Publish Docker Image'
     inputs:
